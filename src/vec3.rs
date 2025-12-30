@@ -39,14 +39,17 @@ impl Vec3 {
         return self.len_squared().sqrt();
     }
 
+    #[inline]
     pub fn normalize(&self) -> Vec3 {
         self / self.len()
     }
 
+    #[inline]
     pub fn dot(&self, other: &Self) -> f32 {
         return self.x * other.x + self.y * other.y + self.z * other.z;
     }
 
+    #[inline]
     pub fn cross(&self, other: &Self) -> Vec3 {
         return Vec3 {
             x: self.y * other.z - self.z * other.y,

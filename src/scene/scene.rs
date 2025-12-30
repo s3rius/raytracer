@@ -1,4 +1,8 @@
-use crate::{color::Color, ray::Ray, scene::renderable::Renderable};
+use crate::{
+    color::Color,
+    scene::renderable::{RayData, Renderable},
+    vec3::Vec3,
+};
 
 type RenderableObject = dyn Renderable + Send + Sync;
 
@@ -16,10 +20,10 @@ impl Scene {
         return self.objects.get_mut(index);
     }
 
-    pub fn get_color(&self, ray: &Ray) -> Option<Color> {
+    pub fn hit(&self, ray: &RayData) -> Option<Color> {
         for obj in &self.objects {
-            if let Some(color) = obj.render(&ray) {
-                return Some(color);
+            if let Some(hit) = obj.hit(&ray) {
+                return Some(Color::from((hit.normal + Vec3::ONE) / 2.));
             }
         }
         None

@@ -4,7 +4,7 @@ use crate::{
     color::Color,
     ppm::PPMImage,
     ray::Ray,
-    scene::scene::Scene,
+    scene::{renderable::RayData, scene::Scene},
     vec3::{Point3, Vec3},
 };
 
@@ -59,7 +59,12 @@ impl Camera {
                             pixel00_loc + (pixel_delta_u * x as f32) + (pixel_delta_v * y as f32);
                         let ray_direction = pixel_center - self.origin;
                         let ray = Ray::new(pixel_center, ray_direction);
-                        scene.get_color(&ray).unwrap_or_else(|| ray_color(&ray))
+                        let rd = RayData {
+                            ray: ray,
+                            t_min: -10.,
+                            t_max: 10.,
+                        };
+                        scene.hit(&rd).unwrap_or_else(|| ray_color(&ray))
                     })
                     .collect::<Vec<_>>()
             })

@@ -1,8 +1,6 @@
 use crate::{
-    color::Color,
-    ray::Ray,
-    scene::renderable::Renderable,
-    vec3::{Point3, Vec3},
+    scene::renderable::{HitRecord, RayData, Renderable},
+    vec3::Point3,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
@@ -18,17 +16,32 @@ impl Sphere {
 }
 
 impl Renderable for Sphere {
-    fn render(&self, ray: &Ray) -> Option<Color> {
-        let oc = self.origin - ray.origin;
-        let a = ray.direction.len_squared();
-        let h = ray.direction.dot(&oc);
+    fn hit(&self, ray: &RayData) -> Option<HitRecord> {
+        let oc = self.origin - ray.ray.origin;
+        let a = ray.ray.direction.len_squared();
+        let h = ray.ray.direction.dot(&oc);
         let c = oc.len_squared() - self.radius.powi(2);
         let discriminant = h.powi(2) - a * c;
         if discriminant < 0. {
             return None;
         }
-        let root = (h - discriminant.sqrt()) / a;
-        let norm = (ray.at(root) + Vec3::new(0., 0., 1.)).normalize();
-        Some(Color::from((norm + Vec3::ONE) / 2.))
+        let dsqrt = discriminant.sqrt();
+        // square equasion has 2 solutions.
+        // Checking both.
+        let mut root = (h - dsqrt) / a;
+        if ray.t_min >= root || ray.t_max <= root {
+            root = (h + dsqrt) / a;
+            // Second solution also doesn't work.
+            if ray.t_min >= root || ray.t_max <= root {
+                return None;
+            }
+        }
+        let point = ray.ray.at(root);
+        let normal = (point - self.origin) / self.radius;
+        Some(HitRecord {
+            t: root,
+            normal,
+            point,
+        })
     }
 }
