@@ -1,4 +1,9 @@
-use crate::{color::Color, ray::Ray, scene::renderable::Renderable, vec3::Point3};
+use crate::{
+    color::Color,
+    ray::Ray,
+    scene::renderable::Renderable,
+    vec3::{Point3, Vec3},
+};
 
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
 pub struct Sphere {
@@ -15,13 +20,15 @@ impl Sphere {
 impl Renderable for Sphere {
     fn render(&self, ray: &Ray) -> Option<Color> {
         let oc = self.origin - ray.origin;
-        let a = ray.direction.dot(&ray.direction);
-        let b = (ray.direction * -2.).dot(&oc);
-        let c = oc.dot(&oc) - self.radius.powi(2);
-        let root = b.powi(2) - 4. * a * c;
-        if root < 0. {
+        let a = ray.direction.len_squared();
+        let h = ray.direction.dot(&oc);
+        let c = oc.len_squared() - self.radius.powi(2);
+        let discriminant = h.powi(2) - a * c;
+        if discriminant < 0. {
             return None;
         }
-        Some(Color::RED)
+        let root = (h - discriminant.sqrt()) / a;
+        let norm = (ray.at(root) + Vec3::new(0., 0., 1.)).normalize();
+        Some(Color::from((norm + Vec3::ONE) / 2.))
     }
 }

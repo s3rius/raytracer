@@ -71,6 +71,7 @@ macro_rules! impl_binary_op {
         impl_binary_op!($trait, $method, f32);
         impl_binary_op!($trait, $method, i32);
         impl_binary_op!($trait, $method, u32);
+        impl_binary_op!($trait, $method, usize);
 
         impl $trait<Vec3> for Vec3 {
             type Output = Vec3;
