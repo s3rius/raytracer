@@ -18,9 +18,10 @@ impl Scene {
     pub fn get_mut(&mut self, index: usize) -> Option<&mut Box<RenderableObject>> {
         self.objects.get_mut(index)
     }
+}
 
-    #[must_use]
-    pub fn hit(&self, ray: &RayData) -> Option<HitRecord> {
+impl Renderable for Scene {
+    fn hit(&self, ray: &RayData) -> Option<HitRecord> {
         let mut closest = ray.interval.max;
         let mut res = None;
         for obj in &self.objects {
@@ -34,5 +35,11 @@ impl Scene {
             }
         }
         res
+    }
+}
+
+impl Renderable for &Scene {
+    fn hit(&self, ray: &RayData) -> Option<HitRecord> {
+        (*self).hit(ray)
     }
 }

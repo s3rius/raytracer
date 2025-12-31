@@ -54,3 +54,9 @@ impl Renderable for Sphere {
         Some(HitRecord::new_with_ray(ray.ray, point, normal, root))
     }
 }
+
+impl Renderable for &Sphere {
+    fn hit(&self, ray: &RayData) -> Option<HitRecord> {
+        (*self).hit(ray)
+    }
+}

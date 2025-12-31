@@ -5,7 +5,7 @@ use crate::{
     interval::Interval,
     ppm::PPMImage,
     ray::Ray,
-    scene::{renderable::RayData, scene::Scene},
+    scene::renderable::{RayData, Renderable},
     vec3::{Point3, Vec3},
 };
 
@@ -52,10 +52,10 @@ impl Camera {
 
         Self {
             origin,
-            output_width,
-            output_height,
             focal_length,
             aspect_ratio,
+            output_width,
+            output_height,
             viewport_start,
             viewport_delta_h,
             viewport_delta_w,
@@ -63,7 +63,7 @@ impl Camera {
     }
 
     #[must_use]
-    pub fn get_img(&self, scene: &Scene) -> PPMImage {
+    pub fn get_img(&self, scene: impl Renderable + Sync) -> PPMImage {
         let pixels = (0..self.output_height)
             .into_par_iter()
             .map(|y| {
