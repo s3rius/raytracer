@@ -63,15 +63,14 @@ impl Renderable for Triangle {
     fn hit(&self, ray: &super::RayData) -> Option<super::HitRecord> {
         let hit = self.plane.hit(ray)?;
         let w = hit.point - self.a;
+        let n_len = self.n.len_squared();
 
-        let gamma = self.u.cross(w).dot(self.n) / self.n.len_squared();
-        let betta = w.cross(self.v).dot(self.n) / self.n.len_squared();
+        let gamma = self.u.cross(w).dot(self.n) / n_len;
+        let betta = w.cross(self.v).dot(self.n) / n_len;
         let alpha = 1. - gamma - betta;
+        let range = 0.0..=1.0;
 
-        if (0.0..=1.0).contains(&alpha)
-            && (0.0..=1.0).contains(&betta)
-            && (0.0..=1.0).contains(&gamma)
-        {
+        if range.contains(&alpha) && range.contains(&betta) && range.contains(&gamma) {
             return Some(hit);
         }
         None
