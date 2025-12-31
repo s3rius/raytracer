@@ -13,52 +13,53 @@ impl Vec3 {
     pub const ZERO: Self = Self::new(0., 0., 0.);
     pub const ONE: Self = Self::new(1., 1., 1.);
 
-    #[must_use] 
+    #[must_use]
     pub const fn new(x: f32, y: f32, z: f32) -> Self {
         Self { x, y, z }
     }
 
-    #[must_use] 
+    #[must_use]
     pub const fn with_x(&self, x: f32) -> Self {
         Self { x, ..*self }
     }
 
-    #[must_use] 
+    #[must_use]
     pub const fn with_y(&self, y: f32) -> Self {
         Self { y, ..*self }
     }
 
-    #[must_use] 
+    #[must_use]
     pub const fn with_z(&self, z: f32) -> Self {
         Self { z, ..*self }
     }
 
     #[inline]
-    #[must_use] 
+    #[must_use]
     pub fn len_squared(&self) -> f32 {
-        self.z.mul_add(self.z, self.y.mul_add(self.y, self.x.powi(2)))
+        self.z
+            .mul_add(self.z, self.y.mul_add(self.y, self.x.powi(2)))
     }
 
     #[inline]
-    #[must_use] 
+    #[must_use]
     pub fn len(&self) -> f32 {
         self.len_squared().sqrt()
     }
 
     #[inline]
-    #[must_use] 
+    #[must_use]
     pub fn normalize(&self) -> Self {
         self / self.len()
     }
 
     #[inline]
-    #[must_use] 
+    #[must_use]
     pub fn dot(&self, other: Self) -> f32 {
-        self.z.mul_add(other.z, self.x.mul_add(other.x, self.y * other.y))
+        self.y.mul_add(other.y, self.z.mul_add(other.z, self.x * other.x))
     }
 
     #[inline]
-    #[must_use] 
+    #[must_use]
     pub fn cross(&self, other: &Self) -> Self {
         Self {
             x: self.y.mul_add(other.z, -(self.z * other.y)),

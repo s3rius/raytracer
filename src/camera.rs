@@ -5,7 +5,7 @@ use crate::{
     interval::Interval,
     ppm::PPMImage,
     ray::Ray,
-    scene::renderable::{RayData, Renderable},
+    renderables::{RayData, Renderable},
     vec3::{Point3, Vec3},
 };
 
@@ -33,6 +33,7 @@ fn ray_color(ray: &Ray) -> Color {
 impl Camera {
     #[must_use]
     pub fn new(origin: Point3, aspect_ratio: f32, output_width: usize) -> Self {
+        #[allow(clippy::cast_sign_loss, clippy::cast_possible_truncation)]
         let mut output_height = (output_width as f32 / aspect_ratio) as usize;
         if output_height < 1 {
             output_height = 1;
@@ -63,7 +64,7 @@ impl Camera {
     }
 
     #[must_use]
-    pub fn get_img(&self, scene: impl Renderable + Sync) -> PPMImage {
+    pub fn get_img(&self, scene: &(impl Renderable + Sync)) -> PPMImage {
         let pixels = (0..self.output_height)
             .into_par_iter()
             .map(|y| {

@@ -2,7 +2,7 @@ use std::time::Instant;
 
 use raytracer::{
     camera::Camera,
-    scene::{scene::Scene, sphere::Sphere},
+    renderables::{Scene, Sphere},
     vec3::{Point3, Vec3},
 };
 

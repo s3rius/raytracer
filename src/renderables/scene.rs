@@ -1,6 +1,6 @@
 use crate::{
     interval::Interval,
-    scene::renderable::{HitRecord, RayData, Renderable},
+    renderables::{HitRecord, RayData, Renderable},
 };
 
 type RenderableObject = dyn Renderable + Send + Sync;

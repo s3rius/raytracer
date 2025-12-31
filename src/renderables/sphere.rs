@@ -1,5 +1,5 @@
 use crate::{
-    scene::renderable::{HitRecord, RayData, Renderable},
+    renderables::{HitRecord, RayData, Renderable},
     vec3::Point3,
 };
 

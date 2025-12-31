@@ -5,6 +5,15 @@ use crate::{
     ray::Ray,
     vec3::{Point3, Vec3},
 };
+mod scene;
+mod sphere;
+
+pub use scene::Scene;
+pub use sphere::Sphere;
+
+pub trait Renderable: Debug {
+    fn hit(&self, ray: &RayData) -> Option<HitRecord>;
+}
 
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
 pub struct HitRecord {
@@ -35,8 +44,4 @@ impl HitRecord {
 pub struct RayData {
     pub ray: Ray,
     pub interval: Interval,
-}
-
-pub trait Renderable: Debug {
-    fn hit(&self, ray: &RayData) -> Option<HitRecord>;
 }
