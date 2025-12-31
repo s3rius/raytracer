@@ -7,7 +7,9 @@ use raytracer::{
 };
 
 fn main() -> anyhow::Result<()> {
-    let camera = Camera::new(Vec3::ZERO, 16. / 10., 1920);
+    let camera = Camera::new(Vec3::ZERO, 16. / 10., 1920)
+        .with_focal_length(1.)
+        .with_anti_aliasing_samples(10);
 
     let mut scene = Scene::default();
     scene.add_object(Box::new(Sphere::new(Point3::new(0., 0., -1.), 0.5)));
