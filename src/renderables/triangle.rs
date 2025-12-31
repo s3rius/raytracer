@@ -59,6 +59,8 @@ impl Triangle {
 /// γ=(u⃗ ×w⃗ )⋅n⃗ /∥n⃗ ∥2
 /// β=(w⃗ ×v⃗ )⋅n⃗ /∥n⃗ ∥2
 /// α=1−γ−β
+///
+/// todo!("Rewrite with Möller-Trumbore algorithm")
 impl Renderable for Triangle {
     fn hit(&self, ray: &super::RayData) -> Option<super::HitRecord> {
         let hit = self.plane.hit(ray)?;
