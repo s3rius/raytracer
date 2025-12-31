@@ -1,5 +1,5 @@
 use crate::{
-    renderables::Renderable,
+    renderables::{Plane, Renderable},
     vec3::{Point3, Vec3},
 };
 
@@ -8,44 +8,72 @@ pub struct Triangle {
     a: Point3,
     b: Point3,
     c: Point3,
+
+    // Barecentric coordinates.
+    // Used for plane intersecting.
+    plane: Plane,
+    u: Vec3,
+    v: Vec3,
+    // Normal
+    n: Vec3,
 }
 
 impl Triangle {
+    #[must_use]
     pub fn new(a: Point3, b: Point3, c: Point3) -> Self {
-        Self { a, b, c }
+        // We pre-calculate triangle's plane it lies on.
+        let n = (b - a).cross(c - a);
+        let plane = Plane::new((a + b + c) / 3, n);
+        Self {
+            a,
+            b,
+            c,
+            plane,
+            u: b - a,
+            v: c - a,
+            n,
+        }
     }
-    pub fn get_normal(&self) -> Vec3 {
-        self.a.cross(&self.b)
+
+    #[must_use]
+    pub const fn a(&self) -> Point3 {
+        self.a
+    }
+
+    #[must_use]
+    pub const fn b(&self) -> Point3 {
+        self.b
+    }
+
+    #[must_use]
+    pub const fn c(&self) -> Point3 {
+        self.c
     }
 }
 
+/// <https://math.stackexchange.com/questions/544946/determine-if-projection-of-3d-point-onto-plane-is-within-a-triangle>
+///
+/// Let u⃗ = B - A, v⃗ = C - A, n⃗ = u⃗ × v⃗ , w⃗ = P − A.
+///
+/// We then have directly the barycentric coordinates of the projection P′ of P onto T as
+/// γ=(u⃗ ×w⃗ )⋅n⃗ /∥n⃗ ∥2
+/// β=(w⃗ ×v⃗ )⋅n⃗ /∥n⃗ ∥2
+/// α=1−γ−β
 impl Renderable for Triangle {
     fn hit(&self, ray: &super::RayData) -> Option<super::HitRecord> {
-        let whatever = self.a + self.b - self.c;
-        let a = ray.ray.direction.len_squared();
-        let b = ray.ray.origin.dot(ray.ray.direction) - ray.ray.direction.dot(whatever);
-        let c = ray.ray.origin.len_squared() - ray.ray.origin.dot(whatever)
-            + self.a.len_squared()
-            + self.b.len_squared()
-            - self.c.len_squared();
+        let hit = self.plane.hit(ray)?;
+        let w = hit.point - self.a;
 
-        let discriminant = b.powi(2) - 4. * a * c;
-        if discriminant < 0. {
-            return None;
+        let gamma = self.u.cross(w).dot(self.n) / self.n.len_squared();
+        let betta = w.cross(self.v).dot(self.n) / self.n.len_squared();
+        let alpha = 1. - gamma - betta;
+
+        if (0.0..=1.0).contains(&alpha)
+            && (0.0..=1.0).contains(&betta)
+            && (0.0..=1.0).contains(&gamma)
+        {
+            return Some(hit);
         }
-
-        let sqrd = discriminant.sqrt();
-        println!("Found root");
-
-        let mut root = (-b - sqrd) / (2. * a);
-        if !ray.interval.contains(root) {
-            root = (-b + sqrd) / (2. * a);
-        }
-
-        let point = ray.ray.at(root);
-        let normal = self.get_normal();
-        Some(super::HitRecord::new_with_ray(
-            &ray.ray, &point, &normal, root,
-        ))
+        None
     }
 }

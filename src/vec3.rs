@@ -61,7 +61,7 @@ impl Vec3 {
 
     #[inline]
     #[must_use]
-    pub fn cross(&self, other: &Self) -> Self {
+    pub fn cross(&self, other: Self) -> Self {
         Self {
             x: self.y.mul_add(other.z, -(self.z * other.y)),
             y: self.z.mul_add(other.x, -(self.x * other.z)),

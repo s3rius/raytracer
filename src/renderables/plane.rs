@@ -10,16 +10,22 @@ pub struct Plane {
 }
 
 impl Plane {
-    pub fn new(origin: Point3, normal: Vec3) -> Self {
+    #[must_use] 
+    pub const fn new(origin: Point3, normal: Vec3) -> Self {
         Self { origin, normal }
     }
 }
 
+// Plane is simple to render.
+//
+//
+// Since we know that
+// A dot B = 0, let's find T for plane?
 impl Renderable for Plane {
     fn hit(&self, ray: &super::RayData) -> Option<super::HitRecord> {
         let t =
             (self.origin - ray.ray.origin).dot(self.normal) / ray.ray.direction.dot(self.normal);
-        if t < 0. || !ray.interval.contains(t)  {
+        if t < 0. || !ray.interval.contains(t) {
             return None;
         }
         let point = ray.ray.at(t);
