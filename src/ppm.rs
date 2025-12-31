@@ -10,12 +10,13 @@ pub struct PPMImage {
 }
 
 impl PPMImage {
+    #[must_use] 
     pub fn new(width: usize, height: usize) -> Self {
-        return Self {
+        Self {
             width,
             height,
             data: (0..width * height).map(|_| Color::BLACK).collect(),
-        };
+        }
     }
 
     fn get_index(&self, x: usize, y: usize) -> anyhow::Result<usize> {

@@ -13,10 +13,10 @@ fn main() -> anyhow::Result<()> {
     if img_height < 1 {
         img_height = 1;
     }
-    let mut camera = Camera::new(Vec3::ZERO, Vec3::ZERO.with_z(1.), img_width, img_height);
-    camera.focal_length = 1.0;
+    let camera = Camera::new(Vec3::ZERO, img_width, img_height);
     let mut scene = Scene::default();
-    scene.add_object(Box::new(Sphere::new(Point3::new(0., 0., 1.), 0.5)));
+    scene.add_object(Box::new(Sphere::new(Point3::new(0., 0., -1.), 0.5)));
+    scene.add_object(Box::new(Sphere::new(Point3::new(0., -100.5, -1.), 100.)));
     let start = Instant::now();
     let img = camera.get_img(&scene);
     println!(

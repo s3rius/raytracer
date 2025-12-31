@@ -9,7 +9,25 @@ use crate::{
 pub struct HitRecord {
     pub point: Point3,
     pub normal: Vec3,
-    pub t: f32,
+    pub distance: f32,
+    pub front_face: bool,
+}
+
+impl HitRecord {
+    #[must_use] 
+    pub fn new_with_ray(ray: Ray, point: Point3, normal: Vec3, distance: f32) -> Self {
+        let mut record = Self {
+            point,
+            normal,
+            distance,
+            front_face: false,
+        };
+        record.front_face = ray.direction.dot(normal) < 0.;
+        if !record.front_face {
+            record.normal = -normal;
+        }
+        record
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]

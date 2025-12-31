@@ -11,7 +11,6 @@ use crate::{
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
 pub struct Camera {
     pub origin: Point3,
-    pub direction: Vec3,
 
     pub focal_length: f32,
     pub output_width: usize,
@@ -26,16 +25,17 @@ fn ray_color(ray: &Ray) -> Color {
 }
 
 impl Camera {
-    pub fn new(origin: Point3, direction: Vec3, output_width: usize, output_height: usize) -> Self {
+    #[must_use]
+    pub const fn new(origin: Point3, output_width: usize, output_height: usize) -> Self {
         Self {
             origin,
-            direction,
             output_width,
             output_height,
             focal_length: 1.0,
         }
     }
 
+    #[must_use]
     pub fn get_img(&self, scene: &Scene) -> PPMImage {
         let viewport_height = 2.;
         let viewport_width =
@@ -58,13 +58,16 @@ impl Camera {
                         let pixel_center =
                             pixel00_loc + (pixel_delta_u * x as f32) + (pixel_delta_v * y as f32);
                         let ray_direction = pixel_center - self.origin;
-                        let ray = Ray::new(pixel_center, ray_direction);
+                        let ray = Ray::new(self.origin, ray_direction);
                         let rd = RayData {
-                            ray: ray,
-                            t_min: -10.,
-                            t_max: 10.,
+                            ray,
+                            t_min: 0.,
+                            t_max: f32::INFINITY,
                         };
-                        scene.hit(&rd).unwrap_or_else(|| ray_color(&ray))
+                        if let Some(hit) = scene.hit(&rd) {
+                            return Color::from((hit.normal + Vec3::ONE) / 2.);
+                        }
+                        ray_color(&ray)
                     })
                     .collect::<Vec<_>>()
             })
@@ -77,7 +80,6 @@ impl Default for Camera {
     fn default() -> Self {
         Self {
             origin: Point3::ZERO,
-            direction: Vec3::ZERO.with_z(1.),
             output_width: 1270,
             output_height: 720,
             focal_length: 1.0,

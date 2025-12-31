@@ -10,52 +10,61 @@ pub struct Vec3 {
 pub type Point3 = Vec3;
 
 impl Vec3 {
-    pub const ZERO: Vec3 = Vec3::new(0., 0., 0.);
-    pub const ONE: Vec3 = Vec3::new(1., 1., 1.);
+    pub const ZERO: Self = Self::new(0., 0., 0.);
+    pub const ONE: Self = Self::new(1., 1., 1.);
 
+    #[must_use] 
     pub const fn new(x: f32, y: f32, z: f32) -> Self {
         Self { x, y, z }
     }
 
+    #[must_use] 
     pub const fn with_x(&self, x: f32) -> Self {
-        return Self { x: x, ..*self };
+        Self { x, ..*self }
     }
 
+    #[must_use] 
     pub const fn with_y(&self, y: f32) -> Self {
-        return Self { y: y, ..*self };
+        Self { y, ..*self }
     }
 
+    #[must_use] 
     pub const fn with_z(&self, z: f32) -> Self {
-        return Self { z: z, ..*self };
+        Self { z, ..*self }
     }
 
     #[inline]
+    #[must_use] 
     pub fn len_squared(&self) -> f32 {
-        self.x.powi(2) + self.y.powi(2) + self.z.powi(2)
+        self.z.mul_add(self.z, self.y.mul_add(self.y, self.x.powi(2)))
     }
 
     #[inline]
+    #[must_use] 
     pub fn len(&self) -> f32 {
-        return self.len_squared().sqrt();
+        self.len_squared().sqrt()
     }
 
     #[inline]
-    pub fn normalize(&self) -> Vec3 {
+    #[must_use] 
+    pub fn normalize(&self) -> Self {
         self / self.len()
     }
 
     #[inline]
-    pub fn dot(&self, other: &Self) -> f32 {
-        return self.x * other.x + self.y * other.y + self.z * other.z;
+    #[must_use] 
+    pub fn dot(&self, other: Self) -> f32 {
+        self.z.mul_add(other.z, self.x.mul_add(other.x, self.y * other.y))
     }
 
     #[inline]
-    pub fn cross(&self, other: &Self) -> Vec3 {
-        return Vec3 {
-            x: self.y * other.z - self.z * other.y,
-            y: self.z * other.x - self.x * other.z,
-            z: self.x * other.y - self.y * other.x,
-        };
+    #[must_use] 
+    pub fn cross(&self, other: &Self) -> Self {
+        Self {
+            x: self.y.mul_add(other.z, -(self.z * other.y)),
+            y: self.z.mul_add(other.x, -(self.x * other.z)),
+            z: self.x.mul_add(other.y, -(self.y * other.x)),
+        }
     }
 }
 
@@ -218,7 +227,7 @@ impl_assign_op!(SubAssign, sub_assign);
 impl_assign_op!(DivAssign, div_assign);
 
 impl Neg for Vec3 {
-    type Output = Vec3;
+    type Output = Self;
 
     fn neg(self) -> Self::Output {
         Self {
