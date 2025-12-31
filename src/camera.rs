@@ -25,11 +25,23 @@ pub struct Camera {
     viewport_delta_w: Vec3,
 }
 
-fn ray_color_vec(ray: &Ray) -> Vec3 {
+fn background_color_vec(ray: &Ray) -> Vec3 {
     let direction = ray.direction.normalize();
     let a = (direction.y + 1.) * 0.5;
-    let v = Vec3::ONE * (1. - a) + (Vec3::new(0.5, 0.7, 1.0) * a);
-    v
+
+    Vec3::ONE * (1. - a) + (Vec3::new(0.5, 0.7, 1.0) * a)
+}
+
+fn get_color_vec(ray: Ray, scene: &impl Renderable) -> Vec3 {
+    let rd = RayData {
+        ray,
+        interval: Interval::new(0., f32::INFINITY),
+    };
+
+    if let Some(hit) = scene.hit(&rd) {
+        return 0.5 * (hit.normal + Vec3::ONE);
+    }
+    background_color_vec(&ray)
 }
 
 impl Camera {
@@ -58,6 +70,7 @@ impl Camera {
         .with_anti_aliasing_samples(10)
     }
 
+    #[must_use]
     pub fn with_focal_length(mut self, focal_length: f32) -> Self {
         let viewport_height = 2.;
         let viewport_width =
@@ -80,6 +93,7 @@ impl Camera {
         self
     }
 
+    #[must_use]
     pub fn with_anti_aliasing_samples(mut self, samples: usize) -> Self {
         self.anti_aliasing_samples = samples;
         if samples != 0 {
@@ -108,39 +122,27 @@ impl Camera {
         pixels.into()
     }
 
-    fn get_color_vec(&self, ray: Ray, scene: &(impl Renderable + Sync)) -> Vec3 {
-        let rd = RayData {
-            ray,
-            interval: Interval::new(0., f32::INFINITY),
-        };
-
-        if let Some(hit) = scene.hit(&rd) {
-            return 0.5 * (hit.normal + Vec3::ONE);
-        }
-        ray_color_vec(&ray)
-    }
-
-    fn get_color_simple(&self, x: usize, y: usize, scene: &(impl Renderable + Sync)) -> Color {
+    fn get_color_simple(&self, x: usize, y: usize, scene: &impl Renderable) -> Color {
         let pixel_center = self.viewport_start
             + (self.viewport_delta_w * x as f32)
             + (self.viewport_delta_h * y as f32);
         let ray_direction = pixel_center - self.origin;
         let ray = Ray::new(self.origin, ray_direction);
-        Color::from(self.get_color_vec(ray, scene))
+        Color::from(get_color_vec(ray, scene))
     }
 
-    fn get_color_antialiased(&self, x: usize, y: usize, scene: &(impl Renderable + Sync)) -> Color {
+    fn get_color_antialiased(&self, x: usize, y: usize, scene: &impl Renderable) -> Color {
         let mut color_vec = Vec3::ZERO;
         let mut rng = rand::rng();
         for _ in 0..self.anti_aliasing_samples {
-            let offset_x = rng.random_range(-0.5..=0.5);
-            let offset_y = rng.random_range(-0.5..=0.5);
+            let offset_x: f32 = rng.random_range(-0.5..=0.5);
+            let offset_y: f32 = rng.random_range(-0.5..=0.5);
             let pixel_center = self.viewport_start
                 + (self.viewport_delta_w * (x as f32 + offset_x))
                 + (self.viewport_delta_h * (y as f32 + offset_y));
             let ray_direction = pixel_center - self.origin;
             let ray = Ray::new(self.origin, ray_direction);
-            color_vec += self.get_color_vec(ray, scene);
+            color_vec += get_color_vec(ray, scene);
         }
 
         Color::from(color_vec * self.anti_aliasing_scale)

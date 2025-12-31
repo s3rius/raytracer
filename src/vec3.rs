@@ -1,3 +1,4 @@
+use rand::distr::{Distribution, StandardUniform, uniform::SampleRange};
 use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, PartialOrd)]
@@ -57,6 +58,18 @@ impl Vec3 {
     pub fn dot(&self, other: Self) -> f32 {
         self.y
             .mul_add(other.y, self.z.mul_add(other.z, self.x * other.x))
+    }
+
+    pub fn rand_with_range(rng: &mut impl rand::Rng, range: impl SampleRange<f32> + Clone) -> Self {
+        Self::new(
+            rng.random_range(range.clone()),
+            rng.random_range(range.clone()),
+            rng.random_range(range),
+        )
+    }
+
+    pub fn rand(rng: &mut impl rand::Rng) -> Self {
+        rng.random()
     }
 
     #[inline]
@@ -245,5 +258,15 @@ impl Neg for &Vec3 {
 
     fn neg(self) -> Self::Output {
         (*self).neg()
+    }
+}
+
+impl Distribution<Vec3> for StandardUniform {
+    fn sample<R: rand::Rng + ?Sized>(&self, rng: &mut R) -> Vec3 {
+        Vec3::new(
+            rng.random_range(0.0..1.0),
+            rng.random_range(0.0..1.0),
+            rng.random_range(0.0..1.0),
+        )
     }
 }

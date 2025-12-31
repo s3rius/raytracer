@@ -3,7 +3,7 @@ use crate::{
     renderables::{HitRecord, RayData, Renderable},
 };
 
-type RenderableObject = dyn Renderable + Send + Sync;
+type RenderableObject = dyn Renderable + Sync;
 
 #[derive(Default, Debug)]
 pub struct Scene {
@@ -13,6 +13,10 @@ pub struct Scene {
 impl Scene {
     pub fn add_object(&mut self, object: Box<RenderableObject>) {
         self.objects.push(object);
+    }
+
+    pub fn add_obects(&mut self, objects: impl IntoIterator<Item = Box<RenderableObject>>) {
+        self.objects.extend(objects);
     }
 
     pub fn get_mut(&mut self, index: usize) -> Option<&mut Box<RenderableObject>> {
