@@ -55,7 +55,8 @@ impl Vec3 {
     #[inline]
     #[must_use]
     pub fn dot(&self, other: Self) -> f32 {
-        self.y.mul_add(other.y, self.z.mul_add(other.z, self.x * other.x))
+        self.y
+            .mul_add(other.y, self.z.mul_add(other.z, self.x * other.x))
     }
 
     #[inline]
@@ -236,5 +237,13 @@ impl Neg for Vec3 {
             y: -self.y,
             z: -self.z,
         }
+    }
+}
+
+impl Neg for &Vec3 {
+    type Output = Vec3;
+
+    fn neg(self) -> Self::Output {
+        (*self).neg()
     }
 }

@@ -1,5 +1,5 @@
 use crate::{
-    renderables::{HitRecord, RayData, Renderable},
+    renderables::{HitRecord, Renderable},
     vec3::Point3,
 };
 
@@ -29,7 +29,7 @@ impl Sphere {
 /// If the equasion has solution, then we hit the
 /// sphere.
 impl Renderable for Sphere {
-    fn hit(&self, ray: &RayData) -> Option<HitRecord> {
+    fn hit(&self, ray: &super::RayData) -> Option<super::HitRecord> {
         let oc = self.origin - ray.ray.origin;
         let a = ray.ray.direction.len_squared();
         let h = ray.ray.direction.dot(oc);
@@ -51,12 +51,12 @@ impl Renderable for Sphere {
         }
         let point = ray.ray.at(root);
         let normal = (point - self.origin) / self.radius;
-        Some(HitRecord::new_with_ray(ray.ray, point, normal, root))
+        Some(HitRecord::new_with_ray(&ray.ray, &point, &normal, root))
     }
 }
 
 impl Renderable for &Sphere {
-    fn hit(&self, ray: &RayData) -> Option<HitRecord> {
+    fn hit(&self, ray: &super::RayData) -> Option<super::HitRecord> {
         (*self).hit(ray)
     }
 }

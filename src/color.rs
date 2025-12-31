@@ -27,9 +27,9 @@ impl Color {
 impl From<Vec3> for Color {
     fn from(value: Vec3) -> Self {
         Self {
-            r: (value.x * 255.999) as u8,
-            g: (value.y * 255.999) as u8,
-            b: (value.z * 255.999) as u8,
+            r: (value.x.abs() * 255.999) as u8,
+            g: (value.y.abs() * 255.999) as u8,
+            b: (value.z.abs() * 255.999) as u8,
         }
     }
 }
