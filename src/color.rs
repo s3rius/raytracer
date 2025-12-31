@@ -1,6 +1,6 @@
 // Color works with u8 instead of f32,
 // so it's okay to loose sign.
-#![allow(clippy::cast_sign_loss)]
+#![allow(clippy::cast_sign_loss, clippy::cast_possible_truncation)]
 
 use crate::vec3::Vec3;
 

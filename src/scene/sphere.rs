@@ -42,10 +42,10 @@ impl Renderable for Sphere {
         // square equasion has 2 solutions.
         // Checking both.
         let mut root = (h - dsqrt) / a;
-        if root <= ray.t_min || ray.t_max <= root {
+        if !ray.interval.contains(root) {
             root = (h + dsqrt) / a;
             // Second solution also doesn't work.
-            if root <= ray.t_min || ray.t_max <= root {
+            if !ray.interval.contains(root) {
                 return None;
             }
         }

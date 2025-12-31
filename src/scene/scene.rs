@@ -1,4 +1,7 @@
-use crate::scene::renderable::{HitRecord, RayData, Renderable};
+use crate::{
+    interval::Interval,
+    scene::renderable::{HitRecord, RayData, Renderable},
+};
 
 type RenderableObject = dyn Renderable + Send + Sync;
 
@@ -16,15 +19,20 @@ impl Scene {
         self.objects.get_mut(index)
     }
 
-    #[must_use] 
+    #[must_use]
     pub fn hit(&self, ray: &RayData) -> Option<HitRecord> {
+        let mut closest = ray.interval.max;
+        let mut res = None;
         for obj in &self.objects {
-            let hit = obj.hit(ray);
-            // If we hit any object, we return early.
-            if hit.is_some() {
-                return hit;
+            let tmp_res = obj.hit(&RayData {
+                ray: ray.ray,
+                interval: Interval::new(ray.interval.min, closest),
+            });
+            if let Some(hit) = tmp_res {
+                res = Some(hit);
+                closest = hit.distance;
             }
         }
-        None
+        res
     }
 }

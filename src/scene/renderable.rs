@@ -1,6 +1,7 @@
 use std::fmt::Debug;
 
 use crate::{
+    interval::Interval,
     ray::Ray,
     vec3::{Point3, Vec3},
 };
@@ -14,7 +15,7 @@ pub struct HitRecord {
 }
 
 impl HitRecord {
-    #[must_use] 
+    #[must_use]
     pub fn new_with_ray(ray: Ray, point: Point3, normal: Vec3, distance: f32) -> Self {
         let mut record = Self {
             point,
@@ -33,8 +34,7 @@ impl HitRecord {
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
 pub struct RayData {
     pub ray: Ray,
-    pub t_min: f32,
-    pub t_max: f32,
+    pub interval: Interval,
 }
 
 pub trait Renderable: Debug {

@@ -2,6 +2,7 @@ use rayon::iter::{IntoParallelIterator, ParallelIterator};
 
 use crate::{
     color::Color,
+    interval::Interval,
     ppm::PPMImage,
     ray::Ray,
     scene::{renderable::RayData, scene::Scene},
@@ -61,8 +62,7 @@ impl Camera {
                         let ray = Ray::new(self.origin, ray_direction);
                         let rd = RayData {
                             ray,
-                            t_min: 0.,
-                            t_max: f32::INFINITY,
+                            interval: Interval::new(0., f32::INFINITY),
                         };
                         if let Some(hit) = scene.hit(&rd) {
                             return Color::from((hit.normal + Vec3::ONE) / 2.);

@@ -25,3 +25,4 @@ pub mod camera;
 pub mod scene;
 pub mod consts;
 pub mod utils;
+pub mod interval;
