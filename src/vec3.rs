@@ -72,6 +72,21 @@ impl Vec3 {
         rng.random()
     }
 
+    pub fn rand_unit(rng: &mut impl rand::Rng) -> Self {
+        loop {
+            let vec = Self::rand_with_range(rng, -1.0..=1.0);
+            let lens = vec.len_squared();
+            if f32::EPSILON < lens && lens <= 1. {
+                return vec.normalize();
+            }
+        }
+    }
+
+    pub fn rand_on_hemisphere(rng: &mut impl rand::Rng, normal: Self) -> Self {
+        let unit = Self::rand_unit(rng);
+        if unit.dot(normal) > 0. { unit } else { -unit }
+    }
+
     #[inline]
     #[must_use]
     pub fn cross(&self, other: Self) -> Self {
