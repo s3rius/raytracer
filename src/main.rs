@@ -8,9 +8,9 @@ use raytracer::{
 
 fn main() -> anyhow::Result<()> {
     let camera = Camera::new(Vec3::ZERO, 16. / 9., 1920)
-        .with_focal_length(1.)
-        .with_anti_aliasing_samples(0)
-        .with_max_depth(10);
+        .with_focal_length(0.9)
+        .with_anti_aliasing_samples(10)
+        .with_max_depth(50);
 
     let mut scene = Scene::default();
     let objs: Vec<Box<dyn Renderable + Sync>> = vec![

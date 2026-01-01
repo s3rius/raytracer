@@ -37,12 +37,12 @@ fn get_color_vec(
 
     let rd = RayData {
         ray,
-        interval: Interval::new(0., f32::INFINITY),
+        interval: Interval::new(0.001, f32::INFINITY),
     };
 
     if let Some(hit) = scene.hit(&rd) {
-        let random_on_hemisphere = Vec3::rand_on_hemisphere(rng, hit.normal);
-        return 0.5
+        let random_on_hemisphere = hit.normal + Vec3::rand_on_hemisphere(rng, hit.normal);
+        return 0.25
             * get_color_vec(
                 Ray::new(hit.point, random_on_hemisphere),
                 depth - 1,

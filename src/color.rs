@@ -24,12 +24,19 @@ impl Color {
     }
 }
 
+fn linear_to_gamma(value: f32) -> f32 {
+    if value <= 0. { value } else { value.sqrt() }
+}
+
 impl From<Vec3> for Color {
     fn from(value: Vec3) -> Self {
+        let x = linear_to_gamma(value.x);
+        let y = linear_to_gamma(value.y);
+        let z = linear_to_gamma(value.z);
         Self {
-            r: (value.x.abs().clamp(0.0, 0.999) * 256.) as u8,
-            g: (value.y.abs().clamp(0.0, 0.999) * 256.) as u8,
-            b: (value.z.abs().clamp(0.0, 0.999) * 256.) as u8,
+            r: (x.clamp(0.0, 0.999) * 256.) as u8,
+            g: (y.clamp(0.0, 0.999) * 256.) as u8,
+            b: (z.clamp(0.0, 0.999) * 256.) as u8,
         }
     }
 }
