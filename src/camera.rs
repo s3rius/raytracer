@@ -41,14 +41,11 @@ fn get_color_vec(
     };
 
     if let Some(hit) = scene.hit(&rd) {
-        let random_on_hemisphere = hit.normal + Vec3::rand_on_hemisphere(rng, hit.normal);
-        return 0.25
-            * get_color_vec(
-                Ray::new(hit.point, random_on_hemisphere),
-                depth - 1,
-                scene,
-                rng,
-            );
+        if let Some(mat_record) = hit.material_ref.scatter(&rd.ray, &hit) {
+            return mat_record.attenuation * get_color_vec(mat_record.ray, depth - 1, scene, rng);
+        } else {
+            return Vec3::ZERO;
+        }
     }
 
     let direction = ray.direction.normalize();

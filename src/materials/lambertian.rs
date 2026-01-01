@@ -18,7 +18,10 @@ impl super::Material for Lambertian {
         hit: &crate::renderables::HitRecord,
     ) -> Option<super::MaterialRecord> {
         let mut rng = rand::rng();
-        let scattered_direction = hit.normal + Vec3::rand_unit(&mut rng);
+        let mut scattered_direction = hit.normal + Vec3::rand_unit(&mut rng);
+        if scattered_direction.near_zero() {
+            scattered_direction = hit.normal;
+        }
         let scattered_ray = Ray::new(hit.point, scattered_direction);
         Some(MaterialRecord::new(self.albedo, scattered_ray))
     }

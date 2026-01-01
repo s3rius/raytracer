@@ -96,6 +96,15 @@ impl Vec3 {
             z: self.x.mul_add(other.y, -(self.y * other.x)),
         }
     }
+
+    pub fn near_zero(&self) -> bool {
+        let s = 1e-8;
+        self.x.abs() < s && self.y.abs() < s && self.z.abs() < s
+    }
+
+    pub fn reflect(&self, normal: Self) -> Vec3 {
+        self - 2. * self.dot(normal) * normal
+    }
 }
 
 impl From<f32> for Vec3 {
