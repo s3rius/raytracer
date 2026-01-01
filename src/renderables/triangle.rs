@@ -56,8 +56,8 @@ impl Triangle {
 /// Let u⃗ = B - A, v⃗ = C - A, n⃗ = u⃗ × v⃗ , w⃗ = P − A.
 ///
 /// We then have directly the barycentric coordinates of the projection P′ of P onto T as
-/// γ=(u⃗ ×w⃗ )⋅n⃗ /∥n⃗ ∥2
-/// β=(w⃗ ×v⃗ )⋅n⃗ /∥n⃗ ∥2
+/// γ=(u⃗×w⃗)⋅n⃗/∥n⃗∥2
+/// β=(w⃗×v⃗)⋅n⃗/∥n⃗∥2
 /// α=1−γ−β
 ///
 /// todo!("Rewrite with Möller-Trumbore algorithm")

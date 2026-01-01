@@ -15,19 +15,87 @@ impl Sphere {
         Self { origin, radius }
     }
 }
-/// Sphere has formula
+/// Sphere has this formula
 ///
 /// x^2 + y^2 + z^2 = r^2
 ///
-/// Therefore we can solve this
-/// equasion for certain points to
-/// find out if ray hits the sphere.
+/// It defines all points on the surface of a sphere.
+/// But it is true only for surface points. If we want to get
+/// all the points inside of a sphere as well, then we need to
+/// modify our formula and turn it into inequality.
 ///
-/// (Origin-Ray) is the vector that goes from
-/// ray to the center of the sphere.
+/// x^2 + y^2 + z^2 <= r^2
 ///
-/// If the equasion has solution, then we hit the
-/// sphere.
+/// That formula would be true for any point inside of the sphere
+/// and surface points.
+///
+/// Now let's solve another problem with this formula. You might
+/// noticed that it's true only for spheres located at 0,0,0.
+/// Which is not true for most cases. But since we do rays here,
+/// We can calculate this formula for any point of possible intersection instead.
+///
+/// Let me explain. Our main goal is to find out wether we need to render this object
+/// or not. In order to do so, we need to see if ray anyhow intersects with the sphere.
+/// And if it does, then inequality from the above should be true.
+///
+/// And where is going to be point of intersection? Well, of course 
+/// somewhere around origin< of a sphere. Let's define some symbols:
+///
+/// Q - Origin of a ray
+/// D - direction of a ray
+/// P - Point of intersection
+/// P_0 - Sphere origin
+///
+/// The point of intersection will happen at P, which is in fact:
+///
+/// P = Q + D * t;
+///
+/// But does this point hits the sphere? Well, we can see it by
+/// subtracting origin of a sphere from the point of intersection.
+///
+/// M = (P - P_0)
+///
+/// Why? To kinda move sphere to 0,0,0 coordinates. And for this 
+/// exact point the inequality should be true.  Let's substitute
+///
+/// M_x^2 + M_y^2 + M_z^2 <= r^2
+/// 
+/// But you might notice that we cannot calculate this inequality,
+/// since we don't know the point of intersection. And that is true,
+/// but we know all other variables. Let's subtitute again.
+///
+/// ((Q + D * t)_x - P_0_x)^2 
+/// + ((Q + D * t)_y - P_0_y)^2 +
+/// + ((Q + D * t)_z - P_0_z)^2 <= r^2
+///
+/// But this formula looks like DOT product between two vectors.
+/// Let's substitute.
+///
+/// (P - P_0) · (P - P_0) <= r^2
+///
+/// P · P - 2 * P · P_0 + P_0 · P_0 - r^2 <= 0
+///
+/// Let's substitute P:
+///
+///
+/// (Q + dt) · (Q + dt) - 2 * (Q + dt) · P_0 + P_0 · P_0 - r^2 <= 0
+///
+/// Q · Q + 2 * dt · Q + dt^2 - 2 * P_0 · Q - 2 * P_0 · dt + P_0^2 <= 0
+///
+/// Let's transform it to the conventional quadratic formula:
+///
+/// dt^2 + t * (2d · Q - 2 * P_0 · d) + P_0^2 + Q^2 - 2 * P_0 · Q - r^2 <= 0
+///
+/// To solve it for `t` we need to find all roots:
+///
+/// a = d
+/// b = 2d · Q - 2 * P_0 · d
+/// c = P_0^2 + Q^2 - 2 * P_0 · Q - r^2
+///
+/// If root exist, then we're intersecting a sphere.
+/// Also, for simplicity we can only render surface of the sphere,
+/// which means just finding roots. But if we want to find all points,
+/// we need to solve quadratic inequality.
 impl Renderable for Sphere {
     fn hit(&self, ray: &super::RayData) -> Option<super::HitRecord> {
         let oc = self.origin - ray.ray.origin;
