@@ -1,7 +1,7 @@
 use std::fmt::Debug;
 
-use crate::{color::Color, ray::Ray, renderables::HitRecord};
+use crate::{materials::MaterialRecord, ray::Ray, renderables::HitRecord};
 
-pub trait Material: Debug {
-    fn scatter(&self, ray_in: &Ray, hit: &HitRecord, attenuation: Color) -> Option<Ray>;
+pub trait Material: Debug + Send + Sync {
+    fn scatter(&self, ray_in: &Ray, hit: &HitRecord) -> Option<MaterialRecord>;
 }

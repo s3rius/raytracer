@@ -1,9 +1,12 @@
+use std::sync::Arc;
+
 use crate::{
+    materials::Material,
     renderables::{Plane, Renderable},
     vec3::{Point3, Vec3},
 };
 
-#[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
+#[derive(Debug, Clone)]
 pub struct Triangle {
     a: Point3,
     b: Point3,
@@ -20,10 +23,10 @@ pub struct Triangle {
 
 impl Triangle {
     #[must_use]
-    pub fn new(a: Point3, b: Point3, c: Point3) -> Self {
+    pub fn new(a: Point3, b: Point3, c: Point3, material: Arc<dyn Material>) -> Self {
         // We pre-calculate triangle's plane it lies on.
         let n = (b - a).cross(c - a);
-        let plane = Plane::new((a + b + c) / 3, n);
+        let plane = Plane::new((a + b + c) / 3, n, material);
         Self {
             a,
             b,

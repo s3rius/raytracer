@@ -36,8 +36,8 @@ impl Renderable for Scene {
                 interval: Interval::new(ray.interval.min, closest),
             });
             if let Some(hit) = tmp_res {
-                res = Some(hit);
                 closest = hit.distance;
+                res = Some(hit);
             }
         }
         res

@@ -1,18 +1,26 @@
+use std::sync::Arc;
+
 use crate::{
+    materials::Material,
     renderables::{HitRecord, Renderable},
     vec3::Point3,
 };
 
-#[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
+#[derive(Debug, Clone)]
 pub struct Sphere {
     origin: Point3,
     radius: f32,
+    material: Arc<dyn Material>,
 }
 
 impl Sphere {
     #[must_use]
-    pub const fn new(origin: Point3, radius: f32) -> Self {
-        Self { origin, radius }
+    pub const fn new(origin: Point3, radius: f32, material: Arc<dyn Material>) -> Self {
+        Self {
+            origin,
+            radius,
+            material,
+        }
     }
 }
 /// Sphere has this formula
@@ -38,7 +46,7 @@ impl Sphere {
 /// or not. In order to do so, we need to see if ray anyhow intersects with the sphere.
 /// And if it does, then inequality from the above should be true.
 ///
-/// And where is going to be point of intersection? Well, of course 
+/// And where is going to be point of intersection? Well, of course
 /// somewhere around origin< of a sphere. Let's define some symbols:
 ///
 /// Q - Origin of a ray
@@ -55,16 +63,16 @@ impl Sphere {
 ///
 /// M = (P - P_0)
 ///
-/// Why? To kinda move sphere to 0,0,0 coordinates. And for this 
+/// Why? To kinda move sphere to 0,0,0 coordinates. And for this
 /// exact point the inequality should be true.  Let's substitute
 ///
 /// M_x^2 + M_y^2 + M_z^2 <= r^2
-/// 
+///
 /// But you might notice that we cannot calculate this inequality,
 /// since we don't know the point of intersection. And that is true,
 /// but we know all other variables. Let's subtitute again.
 ///
-/// ((Q + D * t)_x - P_0_x)^2 
+/// ((Q + D * t)_x - P_0_x)^2
 /// + ((Q + D * t)_y - P_0_y)^2 +
 /// + ((Q + D * t)_z - P_0_z)^2 <= r^2
 ///
@@ -119,7 +127,13 @@ impl Renderable for Sphere {
         }
         let point = ray.ray.at(root);
         let normal = (point - self.origin) / self.radius;
-        Some(HitRecord::new_with_ray(&ray.ray, &point, &normal, root))
+        Some(HitRecord::new_with_ray(
+            &ray.ray,
+            &point,
+            &normal,
+            root,
+            self.material.clone(),
+        ))
     }
 }
 

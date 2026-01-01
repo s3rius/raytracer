@@ -1,18 +1,26 @@
+use std::sync::Arc;
+
 use crate::{
+    materials::Material,
     renderables::Renderable,
     vec3::{Point3, Vec3},
 };
 
-#[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
+#[derive(Debug, Clone)]
 pub struct Plane {
     pub origin: Point3,
     pub normal: Vec3,
+    pub material: Arc<dyn Material>,
 }
 
 impl Plane {
     #[must_use]
-    pub const fn new(origin: Point3, normal: Vec3) -> Self {
-        Self { origin, normal }
+    pub const fn new(origin: Point3, normal: Vec3, material: Arc<dyn Material>) -> Self {
+        Self {
+            origin,
+            normal,
+            material,
+        }
     }
 }
 
@@ -45,7 +53,7 @@ impl Plane {
 /// -> Q · N + ( D * t ) · N - P_0 · N = 0
 /// -> t = ((P_0 - Q) · N) / (d · N)
 ///
-/// In case if t is less than zero, it means that 
+/// In case if t is less than zero, it means that
 /// there's no intersection.
 ///
 impl Renderable for Plane {
@@ -61,6 +69,7 @@ impl Renderable for Plane {
             &point,
             &self.normal,
             t,
+            self.material.clone(),
         ))
     }
 }
