@@ -31,6 +31,8 @@ impl Renderable for Scene {
         for obj in &self.objects {
             let tmp_res = obj.hit(&RayData {
                 ray: ray.ray,
+                // We update interval to not consider
+                // hits further than the closest found so far
                 interval: Interval::new(ray.interval.min, closest),
             });
             if let Some(hit) = tmp_res {
