@@ -11,7 +11,7 @@ fn main() -> anyhow::Result<()> {
     let camera = Camera::new(Vec3::ZERO, 16. / 9., 1920)
         .with_focal_length(0.9)
         .with_anti_aliasing_samples(100)
-        .with_max_depth(10);
+        .with_max_depth(20);
     let mut scene = Scene::default();
 
     let purple_diffuse = Arc::new(Lambertian::new(Vec3::new(0.3, 0.25, 0.40)));
