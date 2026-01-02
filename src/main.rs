@@ -8,9 +8,9 @@ use raytracer::{
 };
 
 fn main() -> anyhow::Result<()> {
-    let camera = Camera::new(Vec3::ZERO, 16. / 9., 1920)
+    let camera = Camera::new(Vec3::ZERO, 16. / 9., 1200)
         .with_focal_length(1.)
-        .with_anti_aliasing_samples(100)
+        .with_anti_aliasing_samples(5)
         .with_max_depth(10);
     let mut scene = Scene::default();
 
