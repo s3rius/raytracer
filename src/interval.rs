@@ -1,4 +1,4 @@
-#[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Interval {
     pub min: f32,
     pub max: f32,

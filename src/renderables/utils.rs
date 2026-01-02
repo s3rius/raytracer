@@ -40,7 +40,7 @@ impl HitRecord {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct RayData {
     pub ray: Ray,
     pub interval: Interval,

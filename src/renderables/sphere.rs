@@ -107,9 +107,9 @@ impl Sphere {
 impl Renderable for Sphere {
     fn hit(&self, ray: &super::RayData) -> Option<super::HitRecord> {
         let oc = self.origin - ray.ray.origin;
-        let a = ray.ray.direction.len_squared();
+        let a = ray.ray.direction.length_squared();
         let h = ray.ray.direction.dot(oc);
-        let c = self.radius.mul_add(-self.radius, oc.len_squared());
+        let c = self.radius.mul_add(-self.radius, oc.length_squared());
         let discriminant = h.mul_add(h, -(a * c));
         if discriminant < 0. {
             return None;

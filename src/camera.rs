@@ -9,7 +9,7 @@ use crate::{
     vec3::{Point3, Vec3},
 };
 
-#[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Camera {
     pub origin: Point3,
     pub aspect_ratio: f32,

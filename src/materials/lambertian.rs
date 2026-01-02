@@ -1,3 +1,4 @@
+use crate::vec3::Vec3Ext;
 use crate::{materials::MaterialRecord, ray::Ray, vec3::Vec3};
 
 #[derive(Debug)]
