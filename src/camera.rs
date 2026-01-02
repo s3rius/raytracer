@@ -16,6 +16,7 @@ pub struct Camera {
     pub output_width: usize,
     pub anti_aliasing_samples: usize,
     pub max_depth: usize,
+    pub fov: usize,
     anti_aliasing_scale: f32,
 
     focal_length: f32,
@@ -69,6 +70,7 @@ impl Camera {
             anti_aliasing_samples: 1,
             anti_aliasing_scale: 1.,
             max_depth: 100,
+            fov: 90,
             aspect_ratio,
             output_width,
             output_height,
@@ -82,9 +84,12 @@ impl Camera {
 
     #[must_use]
     pub fn with_focal_length(mut self, focal_length: f32) -> Self {
-        let viewport_height = 2.;
+        let theta = (self.fov as f32).to_radians();
+        let h = (theta / 2.).tan();
+        let viewport_height = 2. * h * self.focal_length;
         let viewport_width =
             viewport_height * (self.output_width as f32 / self.output_height as f32);
+
         let viewport_w = Vec3::new(viewport_width, 0., 0.);
         let viewport_h = Vec3::new(0., -viewport_height, 0.);
 
@@ -116,6 +121,12 @@ impl Camera {
     pub fn with_max_depth(mut self, depth: usize) -> Self {
         self.max_depth = depth;
         self
+    }
+
+    #[must_use]
+    pub fn with_fov(mut self, fov: usize) -> Self {
+        self.fov = fov;
+        self.with_focal_length(self.focal_length)
     }
 
     #[must_use]

@@ -11,6 +11,7 @@ fn main() -> anyhow::Result<()> {
     let camera = Camera::new(Vec3::new(0., 0., 0.4), 16. / 9., 1200)
         .with_focal_length(1.)
         .with_anti_aliasing_samples(20)
+        .with_fov(90)
         .with_max_depth(7);
     let mut scene = Scene::default();
 
@@ -42,6 +43,7 @@ fn main() -> anyhow::Result<()> {
     ];
     scene.add_obects(objs);
     let start = Instant::now();
+
     let img = camera.get_img(&scene);
     println!(
         "Spent {}ms on a frame",
