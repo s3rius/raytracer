@@ -8,11 +8,11 @@ use raytracer::{
 };
 
 fn main() -> anyhow::Result<()> {
-    let camera = Camera::new(Vec3::new(0., 0., 0.4), 16. / 9., 1200)
-        .with_focal_length(1.)
-        .with_anti_aliasing_samples(20)
+    let camera = Camera::new(Vec3::new(-0.5, 0.8, 1.0), 16. / 9., 1920)
+        .with_anti_aliasing_samples(10)
         .with_fov(90)
-        .with_max_depth(7);
+        .with_max_depth(10)
+        .with_lookat(Point3::new(0.0, -0.0, -1.));
     let mut scene = Scene::default();
 
     let purple_diffuse = Arc::new(Lambertian::new(Vec3::new(0.3, 0.25, 0.40)));

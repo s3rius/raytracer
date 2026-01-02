@@ -13,6 +13,7 @@ use crate::{
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Camera {
     pub origin: Point3,
+    pub lookat: Point3,
     pub aspect_ratio: f32,
     pub output_width: usize,
     pub anti_aliasing_samples: usize,
@@ -62,6 +63,7 @@ impl Camera {
         Self {
             origin,
             focal_length,
+            lookat: Vec3::new(0., 0., -1.),
             anti_aliasing_samples: 1,
             anti_aliasing_scale: 1.,
             max_depth: 100,
@@ -81,18 +83,23 @@ impl Camera {
     pub fn with_focal_length(mut self, focal_length: f32) -> Self {
         let theta = (self.fov as f32).to_radians();
         let h = (theta / 2.).tan();
+
+        let w = (self.origin - self.lookat).normalize();
+        let u = Vec3::new(0., 1., 0.).cross(w).normalize();
+        let v = w.cross(u);
+
         let viewport_height = 2. * h * self.focal_length;
         let viewport_width =
             viewport_height * (self.output_width as f32 / self.output_height as f32);
 
-        let viewport_w = Vec3::new(viewport_width, 0., 0.);
-        let viewport_h = Vec3::new(0., -viewport_height, 0.);
+        let viewport_w = viewport_width * u;
+        let viewport_h = viewport_height * -v;
 
         let viewport_delta_w = viewport_w / self.output_width as f32;
         let viewport_delta_h = viewport_h / self.output_height as f32;
 
         let viewport_upper_left =
-            self.origin - Vec3::new(0., 0., focal_length) - viewport_h / 2. - viewport_w / 2.;
+            self.origin - (Vec3::new(0., 0., focal_length) * w) - viewport_w / 2. - viewport_h / 2.;
         let viewport_start = viewport_upper_left + 0.5 * (viewport_delta_w + viewport_delta_h);
 
         self.focal_length = focal_length;
@@ -100,6 +107,12 @@ impl Camera {
         self.viewport_delta_h = viewport_delta_h;
         self.viewport_delta_w = viewport_delta_w;
 
+        self
+    }
+
+    pub fn reinit(mut self) -> Self {
+        let focal_len = (self.origin - self.lookat).length();
+        self = self.with_focal_length(focal_len);
         self
     }
 
@@ -121,7 +134,13 @@ impl Camera {
     #[must_use]
     pub fn with_fov(mut self, fov: usize) -> Self {
         self.fov = fov;
-        self.with_focal_length(self.focal_length)
+        self.reinit()
+    }
+
+    #[must_use]
+    pub fn with_lookat(mut self, lookat: Point3) -> Self {
+        self.lookat = lookat;
+        self.reinit()
     }
 
     #[must_use]
