@@ -16,7 +16,7 @@ fn main() -> anyhow::Result<()> {
 
     let purple_diffuse = Arc::new(Lambertian::new(Vec3::new(0.3, 0.25, 0.40)));
     let default_metal = Arc::new(Metal::new(Vec3::new(0.7, 0.7, 0.7)).with_fuzz(0.04));
-    let gold = Arc::new(Metal::new(Vec3::new(0.8, 0.6, 0.2)).with_fuzz(0.1));
+    let gold = Arc::new(Metal::new(Vec3::new(0.8, 0.6, 0.2)).with_fuzz(0.3));
     let glass = Arc::new(Dielectric::new(1.5));
 
     let mut tr = Triangle::new(
