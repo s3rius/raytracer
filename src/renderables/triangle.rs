@@ -8,10 +8,10 @@ use crate::{
 
 #[derive(Debug, Clone)]
 pub struct Triangle {
-    a: Point3,
-    b: Point3,
-    c: Point3,
-    material: Arc<dyn Material>,
+    pub a: Point3,
+    pub b: Point3,
+    pub c: Point3,
+    pub material: Arc<dyn Material>,
 }
 
 impl Triangle {
@@ -20,19 +20,17 @@ impl Triangle {
         Self { a, b, c, material }
     }
 
-    #[must_use]
-    pub const fn a(&self) -> Point3 {
-        self.a
+    pub fn move_to(&mut self, point: Point3) {
+        let centroid = (self.a + self.b + self.c) / 3.;
+        self.a = point + (self.a - centroid);
+        self.b = point + (self.b - centroid);
+        self.c = point + (self.c - centroid);
     }
 
-    #[must_use]
-    pub const fn b(&self) -> Point3 {
-        self.b
-    }
-
-    #[must_use]
-    pub const fn c(&self) -> Point3 {
-        self.c
+    pub fn rotate(&mut self, quat: glam::Quat) {
+        self.a = quat * self.a;
+        self.b = quat * self.b;
+        self.c = quat * self.c;
     }
 }
 

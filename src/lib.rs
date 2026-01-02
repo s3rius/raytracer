@@ -23,6 +23,5 @@ pub mod vec3;
 pub mod ray;
 pub mod camera;
 pub mod renderables;
-pub mod utils;
 pub mod interval;
 pub mod materials;
