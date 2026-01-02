@@ -25,6 +25,7 @@ impl Vec3Ext for Vec3 {
         self.x.abs() < s && self.y.abs() < s && self.z.abs() < s
     }
 
+    #[inline]
     fn reflect(&self, normal: Self) -> Self {
         self - 2. * self.dot(normal) * normal
     }
