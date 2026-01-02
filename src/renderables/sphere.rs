@@ -52,7 +52,7 @@ impl Sphere {
 /// Q - Origin of a ray
 /// D - direction of a ray
 /// P - Point of intersection
-/// P_0 - Sphere origin
+/// `P_0` - Sphere origin
 ///
 /// The point of intersection will happen at P, which is in fact:
 ///
@@ -61,44 +61,44 @@ impl Sphere {
 /// But does this point hits the sphere? Well, we can see it by
 /// subtracting origin of a sphere from the point of intersection.
 ///
-/// M = (P - P_0)
+/// M = (P - `P_0`)
 ///
 /// Why? To kinda move sphere to 0,0,0 coordinates. And for this
 /// exact point the inequality should be true.  Let's substitute
 ///
-/// M_x^2 + M_y^2 + M_z^2 <= r^2
+/// `M_x^2` + `M_y^2` + `M_z^2` <= r^2
 ///
 /// But you might notice that we cannot calculate this inequality,
 /// since we don't know the point of intersection. And that is true,
 /// but we know all other variables. Let's subtitute again.
 ///
-/// ((Q + D * t)_x - P_0_x)^2
-/// + ((Q + D * t)_y - P_0_y)^2 +
-/// + ((Q + D * t)_z - P_0_z)^2 <= r^2
+/// ((Q + D * t)_x - `P_0_x)^2`
+/// + ((Q + D * t)_y - `P_0_y)^2` +
+/// + ((Q + D * t)_z - `P_0_z)^2` <= r^2
 ///
 /// But this formula looks like DOT product between two vectors.
 /// Let's substitute.
 ///
-/// (P - P_0) · (P - P_0) <= r^2
+/// (P - `P_0`) · (P - `P_0`) <= r^2
 ///
-/// P · P - 2 * P · P_0 + P_0 · P_0 - r^2 <= 0
+/// P · P - 2 * P · `P_0` + `P_0` · `P_0` - r^2 <= 0
 ///
 /// Let's substitute P:
 ///
 ///
-/// (Q + dt) · (Q + dt) - 2 * (Q + dt) · P_0 + P_0 · P_0 - r^2 <= 0
+/// (Q + dt) · (Q + dt) - 2 * (Q + dt) · `P_0` + `P_0` · `P_0` - r^2 <= 0
 ///
-/// Q · Q + 2 * dt · Q + dt^2 - 2 * P_0 · Q - 2 * P_0 · dt + P_0^2 <= 0
+/// Q · Q + 2 * dt · Q + dt^2 - 2 * `P_0` · Q - 2 * `P_0` · dt + `P_0^2` <= 0
 ///
 /// Let's transform it to the conventional quadratic formula:
 ///
-/// dt^2 + t * (2d · Q - 2 * P_0 · d) + P_0^2 + Q^2 - 2 * P_0 · Q - r^2 <= 0
+/// dt^2 + t * (2d · Q - 2 * `P_0` · d) + `P_0^2` + Q^2 - 2 * `P_0` · Q - r^2 <= 0
 ///
 /// To solve it for `t` we need to find all roots:
 ///
 /// a = d
-/// b = 2d · Q - 2 * P_0 · d
-/// c = P_0^2 + Q^2 - 2 * P_0 · Q - r^2
+/// b = 2d · Q - 2 * `P_0` · d
+/// c = `P_0^2` + Q^2 - 2 * `P_0` · Q - r^2
 ///
 /// If root exist, then we're intersecting a sphere.
 /// Also, for simplicity we can only render surface of the sphere,

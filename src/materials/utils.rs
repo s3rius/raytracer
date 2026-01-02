@@ -6,7 +6,8 @@ pub struct MaterialRecord {
 }
 
 impl MaterialRecord {
-    pub fn new(attenuation: Vec3, ray: Ray) -> Self {
+    #[must_use] 
+    pub const fn new(attenuation: Vec3, ray: Ray) -> Self {
         Self { attenuation, ray }
     }
 }

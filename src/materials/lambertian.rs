@@ -7,7 +7,8 @@ pub struct Lambertian {
 }
 
 impl Lambertian {
-    pub fn new(albedo: Vec3) -> Self {
+    #[must_use] 
+    pub const fn new(albedo: Vec3) -> Self {
         Self { albedo }
     }
 }

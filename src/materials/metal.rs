@@ -11,10 +11,12 @@ pub struct Metal {
 }
 
 impl Metal {
-    pub fn new(albedo: Vec3) -> Self {
+    #[must_use] 
+    pub const fn new(albedo: Vec3) -> Self {
         Self { albedo, fuzz: 1. }
     }
 
+    #[must_use] 
     pub fn with_fuzz(mut self, fuzz: f32) -> Self {
         if fuzz > 1.0 {
             self.fuzz = 1.0;

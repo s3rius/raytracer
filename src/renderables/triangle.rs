@@ -39,6 +39,7 @@ impl Triangle {
 ///
 /// Google for Möller-Trumbore algorithm
 impl Renderable for Triangle {
+    #[allow(clippy::many_single_char_names)]
     fn hit(&self, ray: &super::RayData) -> Option<super::HitRecord> {
         let edge1 = self.b - self.a;
         let edge2 = self.c - self.a;

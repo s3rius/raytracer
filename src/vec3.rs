@@ -8,7 +8,6 @@ pub trait Vec3Ext {
     fn rand_with_range(rng: &mut impl rand::Rng, range: impl SampleRange<f32> + Clone) -> Self;
     fn rand_on_hemisphere(rng: &mut impl rand::Rng, normal: Self) -> Self;
     fn near_zero(&self) -> bool;
-    fn reflect(&self, normal: Self) -> Self;
 }
 
 impl Vec3Ext for Vec3 {
@@ -23,11 +22,6 @@ impl Vec3Ext for Vec3 {
     fn near_zero(&self) -> bool {
         let s = 1e-8;
         self.x.abs() < s && self.y.abs() < s && self.z.abs() < s
-    }
-
-    #[inline]
-    fn reflect(&self, normal: Self) -> Self {
-        self - 2. * self.dot(normal) * normal
     }
 
     fn rand_unit(rng: &mut impl rand::Rng) -> Self {

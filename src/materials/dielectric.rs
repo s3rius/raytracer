@@ -9,7 +9,8 @@ pub struct Dielectric {
 }
 
 impl Dielectric {
-    pub fn new(refraction_index: f32) -> Self {
+    #[must_use] 
+    pub const fn new(refraction_index: f32) -> Self {
         Self { refraction_index }
     }
 }
@@ -18,7 +19,7 @@ impl Dielectric {
 /// Schlick's approximation for reflectance.
 fn reflectance(cosine: f32, refraction_index: f32) -> f32 {
     let r0 = ((1. - refraction_index) / (1. + refraction_index)).powi(2);
-    r0 + (1. - r0) * (1. - cosine).powi(5)
+    (1. - r0).mul_add((1. - cosine).powi(5), r0)
 }
 
 impl super::Material for Dielectric {
@@ -35,7 +36,7 @@ impl super::Material for Dielectric {
         };
         let unit_direction = ray_in.direction.normalize();
         let cos_theta = hit.normal.dot(-unit_direction).min(1.0);
-        let sin_theta = (1. - cos_theta.powi(2)).sqrt();
+        let sin_theta = cos_theta.mul_add(-cos_theta, 1.).sqrt();
         let mut rng = rand::rng();
 
         // We cannot refract, because there's no

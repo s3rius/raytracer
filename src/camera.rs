@@ -1,3 +1,4 @@
+use rand::Rng;
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
 
 use crate::{
@@ -26,12 +27,7 @@ pub struct Camera {
     viewport_delta_w: Vec3,
 }
 
-fn get_color_vec(
-    ray: Ray,
-    depth: usize,
-    scene: &impl Renderable,
-    rng: &mut impl rand::Rng,
-) -> Vec3 {
+fn get_color_vec(ray: Ray, depth: usize, scene: &impl Renderable) -> Vec3 {
     if depth == 0 {
         return Vec3::ZERO;
     }
@@ -43,10 +39,9 @@ fn get_color_vec(
 
     if let Some(hit) = scene.hit(&rd) {
         if let Some(mat_record) = hit.material_ref.scatter(&rd.ray, &hit) {
-            return mat_record.attenuation * get_color_vec(mat_record.ray, depth - 1, scene, rng);
-        } else {
-            return Vec3::ZERO;
+            return mat_record.attenuation * get_color_vec(mat_record.ray, depth - 1, scene);
         }
+        return Vec3::ZERO;
     }
 
     let direction = ray.direction.normalize();
@@ -118,7 +113,7 @@ impl Camera {
     }
 
     #[must_use]
-    pub fn with_max_depth(mut self, depth: usize) -> Self {
+    pub const fn with_max_depth(mut self, depth: usize) -> Self {
         self.max_depth = depth;
         self
     }
@@ -137,12 +132,10 @@ impl Camera {
                 (0..self.output_width)
                     .into_par_iter()
                     .map(|x| {
-                        let mut rng = rand::rng();
-                        rng.reseed().ok();
                         if self.anti_aliasing_samples == 0 {
-                            self.get_color_simple(x, y, scene, &mut rng)
+                            self.get_color_simple(x, y, scene)
                         } else {
-                            self.get_color_antialiased(x, y, scene, &mut rng)
+                            self.get_color_antialiased(x, y, scene)
                         }
                     })
                     .collect::<Vec<_>>()
@@ -151,28 +144,17 @@ impl Camera {
         pixels.into()
     }
 
-    fn get_color_simple(
-        &self,
-        x: usize,
-        y: usize,
-        scene: &impl Renderable,
-        rng: &mut impl rand::Rng,
-    ) -> Color {
+    fn get_color_simple(&self, x: usize, y: usize, scene: &impl Renderable) -> Color {
         let pixel_center = self.viewport_start
             + (self.viewport_delta_w * x as f32)
             + (self.viewport_delta_h * y as f32);
         let ray_direction = pixel_center - self.origin;
         let ray = Ray::new(self.origin, ray_direction);
-        Color::from(get_color_vec(ray, self.max_depth, scene, rng))
+        Color::from(get_color_vec(ray, self.max_depth, scene))
     }
 
-    fn get_color_antialiased(
-        &self,
-        x: usize,
-        y: usize,
-        scene: &impl Renderable,
-        rng: &mut impl rand::Rng,
-    ) -> Color {
+    fn get_color_antialiased(&self, x: usize, y: usize, scene: &impl Renderable) -> Color {
+        let mut rng = rand::rng();
         let mut color_vec = Vec3::ZERO;
         for _ in 0..self.anti_aliasing_samples {
             let offset_x: f32 = rng.random_range(-0.5..=0.5);
@@ -182,7 +164,7 @@ impl Camera {
                 + (self.viewport_delta_h * (y as f32 + offset_y));
             let ray_direction = pixel_center - self.origin;
             let ray = Ray::new(self.origin, ray_direction);
-            color_vec += get_color_vec(ray, self.max_depth, scene, rng);
+            color_vec += get_color_vec(ray, self.max_depth, scene);
         }
 
         Color::from(color_vec * self.anti_aliasing_scale)

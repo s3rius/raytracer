@@ -10,11 +10,13 @@ pub struct CombineMaterial {
 }
 
 impl CombineMaterial {
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
 
-    pub fn add(mut self, material: Arc<dyn Material>) -> Self {
+    #[must_use]
+    pub fn add_material(mut self, material: Arc<dyn Material>) -> Self {
         self.materials.push(material);
         self
     }
@@ -26,7 +28,7 @@ impl Material for CombineMaterial {
         ray_in: &crate::ray::Ray,
         hit: &crate::renderables::HitRecord,
     ) -> Option<super::MaterialRecord> {
-        let mut ray = ray_in.clone();
+        let mut ray = *ray_in;
         let mut albedo = Vec3::ZERO;
 
         for material in &self.materials {
@@ -35,9 +37,9 @@ impl Material for CombineMaterial {
                 ray = mat_hit.ray;
             }
         }
-        return Some(MaterialRecord::new(
+        Some(MaterialRecord::new(
             albedo / self.materials.len() as f32,
             ray,
-        ));
+        ))
     }
 }

@@ -29,7 +29,7 @@ impl Plane {
 /// Q - Origin of a ray
 /// D - direction of a ray
 /// P - Point of intersection
-/// P_0 - Plane's origin
+/// `P_0` - Plane's origin
 /// N - Plane's normal
 ///
 /// Since we know that
@@ -41,7 +41,7 @@ impl Plane {
 ///
 /// It's described by the following equasion:
 ///
-/// (P - P_0) · N = 0
+/// (P - `P_0`) · N = 0
 ///
 /// Our Point of Intesection (P) is described by the formula:
 /// P = Q + D * t
@@ -49,9 +49,9 @@ impl Plane {
 /// We don't know t, but we know all other parameters. Let's substitue
 /// and find the resulting formula for t.
 ///
-/// (Q + D * t - P_0) · N = 0
-/// -> Q · N + ( D * t ) · N - P_0 · N = 0
-/// -> t = ((P_0 - Q) · N) / (d · N)
+/// (Q + D * t - `P_0`) · N = 0
+/// -> Q · N + ( D * t ) · N - `P_0` · N = 0
+/// -> t = ((`P_0` - Q) · N) / (d · N)
 ///
 /// In case if t is less than zero, it means that
 /// there's no intersection.
