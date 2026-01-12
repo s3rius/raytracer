@@ -7,7 +7,7 @@ use crate::{
     ppm::PPMImage,
     ray::Ray,
     renderables::{RayData, Renderable},
-    vec3::{Point3, Vec3},
+    vec3::{Point3, Vec3, Vec3Ext},
 };
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -81,37 +81,36 @@ impl Camera {
 
     #[must_use]
     pub fn with_focal_length(mut self, focal_length: f32) -> Self {
-        let theta = (self.fov as f32).to_radians();
-        let h = (theta / 2.).tan();
-
-        let w = (self.origin - self.lookat).normalize();
-        let u = Vec3::new(0., 1., 0.).cross(w).normalize();
-        let v = w.cross(u);
-
-        let viewport_height = 2. * h * self.focal_length;
-        let viewport_width =
-            viewport_height * (self.output_width as f32 / self.output_height as f32);
-
-        let viewport_w = viewport_width * u;
-        let viewport_h = viewport_height * -v;
-
-        let viewport_delta_w = viewport_w / self.output_width as f32;
-        let viewport_delta_h = viewport_h / self.output_height as f32;
-
-        let viewport_upper_left =
-            self.origin - (Vec3::new(0., 0., focal_length) * w) - viewport_w / 2. - viewport_h / 2.;
-        let viewport_start = viewport_upper_left + 0.5 * (viewport_delta_w + viewport_delta_h);
-
         self.focal_length = focal_length;
-        self.viewport_start = viewport_start;
-        self.viewport_delta_h = viewport_delta_h;
-        self.viewport_delta_w = viewport_delta_w;
+        // Fov angle.
+        let theta = (self.fov as f32).to_radians();
+        // Since FOV is a whole angle, we want to calculate
+        // only upper half to see height of a viewport.
+        //
+        // Since tan = oppose / adjasent, we can say that
+        // oppose side of the triangle would be equal to
+        // tg(Θ) * adjacent. Which is equal to focal len.
+        let viewport_height = (0.5 * theta).tan() * focal_length * 2.;
+        // Now when we know our height, we can calculate width of a viewport.
+        let viewport_width = viewport_height * self.aspect_ratio;
+
+        let rotation = glam::Quat::look_at_lh(self.origin, self.lookat, Vec3::UP);
+
+        let viewport_forward = rotation * Vec3::FORWARD;
+        let viewport_right = Vec3::UP.cross(viewport_forward).normalize();
+        let viewport_up = viewport_forward.cross(viewport_right).normalize();
+
+        self.viewport_start = self.lookat + (viewport_up * 0.5 * viewport_height)
+            - (0.5 * viewport_width * viewport_right);
+        self.viewport_delta_h = -viewport_up * viewport_height / self.output_height as f32;
+        self.viewport_delta_w = viewport_right * viewport_width / self.output_width as f32;
 
         self
     }
 
+    #[must_use]
     pub fn reinit(mut self) -> Self {
-        let focal_len = (self.origin - self.lookat).length();
+        let focal_len = (self.lookat - self.origin).length();
         self = self.with_focal_length(focal_len);
         self
     }

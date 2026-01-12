@@ -8,11 +8,12 @@ use raytracer::{
 };
 
 fn main() -> anyhow::Result<()> {
-    let camera = Camera::new(Vec3::new(-0.5, 0.8, 1.0), 16. / 9., 1920)
-        .with_anti_aliasing_samples(10)
-        .with_fov(90)
-        .with_max_depth(10)
-        .with_lookat(Point3::new(0.0, -0.0, -1.));
+    let camera = Camera::new(Vec3::new(0., 0., 0.), 16. / 9., 800)
+        .with_anti_aliasing_samples(0)
+        .with_fov(60)
+        .with_max_depth(7)
+        .with_lookat(Point3::new(-1., 0.0, 1.));
+    // panic!("Heh");
     let mut scene = Scene::default();
 
     let purple_diffuse = Arc::new(Lambertian::new(Vec3::new(0.3, 0.25, 0.40)));
@@ -31,9 +32,9 @@ fn main() -> anyhow::Result<()> {
     tr.move_to(Point3::new(-0.2, -0.35, -0.4));
 
     let objs: Vec<Box<dyn Renderable + Sync>> = vec![
-        Box::new(Sphere::new(Point3::new(-1.0, 0.0, -1.), 0.5, glass)),
-        Box::new(Sphere::new(Point3::new(0.0, 0.0, -1.), 0.5, default_metal)),
-        Box::new(Sphere::new(Point3::new(1.0, 0.0, -1.), 0.5, gold.clone())),
+        Box::new(Sphere::new(Point3::new(-1.0, 0.0, 1.), 0.5, glass)),
+        Box::new(Sphere::new(Point3::new(0.0, 0.0, 1.), 0.5, default_metal)),
+        Box::new(Sphere::new(Point3::new(1.0, 0.0, 1.), 0.5, gold.clone())),
         Box::new(Plane::new(
             Point3::new(0.0, -0.5, 0.0),
             Vec3::ZERO.with_y(1.),

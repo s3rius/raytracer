@@ -4,6 +4,10 @@ pub use glam::f32::Vec3;
 pub type Point3 = Vec3;
 
 pub trait Vec3Ext {
+    const UP: Vec3 = Vec3::new(0., 1., 0.);
+    const DOWN: Vec3 = Vec3::new(0., -1., 0.);
+    const FORWARD: Vec3 = Vec3::new(0., 0., 1.);
+
     fn rand_unit(rng: &mut impl rand::Rng) -> Self;
     fn rand_with_range(rng: &mut impl rand::Rng, range: impl SampleRange<f32> + Clone) -> Self;
     fn rand_on_hemisphere(rng: &mut impl rand::Rng, normal: Self) -> Self;
