@@ -8,11 +8,11 @@ use raytracer::{
 };
 
 fn main() -> anyhow::Result<()> {
-    let camera = Camera::new(Vec3::new(0., 0., 0.), 16. / 9., 800)
+    let camera = Camera::new(Vec3::new(-1., 1., 0.), 16. / 9., 800)
         .with_anti_aliasing_samples(0)
         .with_fov(60)
         .with_max_depth(7)
-        .with_lookat(Point3::new(-1., 0.0, 1.));
+        .with_lookat(Point3::new(1., 0.0, 1.));
     // panic!("Heh");
     let mut scene = Scene::default();
 

@@ -94,14 +94,18 @@ impl Camera {
         // Now when we know our height, we can calculate width of a viewport.
         let viewport_width = viewport_height * self.aspect_ratio;
 
-        let rotation = glam::Quat::look_at_lh(self.origin, self.lookat, Vec3::UP);
-
-        let viewport_forward = rotation * Vec3::FORWARD;
+        // Vector that points from origin to lookat
+        let viewport_forward = (self.lookat - self.origin).normalize();
+        // Vector that points to the right on the viewport (perpendicular to UP and forward
+        // direction);
         let viewport_right = Vec3::UP.cross(viewport_forward).normalize();
+        // Vector that points up on the viewport (perpendicular to forward and right).
         let viewport_up = viewport_forward.cross(viewport_right).normalize();
 
-        self.viewport_start = self.lookat + (viewport_up * 0.5 * viewport_height)
-            - (0.5 * viewport_width * viewport_right);
+        self.viewport_start =
+            self.origin + viewport_forward * focal_length + (viewport_up * 0.5 * viewport_height)
+                - (0.5 * viewport_width * viewport_right);
+
         self.viewport_delta_h = -viewport_up * viewport_height / self.output_height as f32;
         self.viewport_delta_w = viewport_right * viewport_width / self.output_width as f32;
 
