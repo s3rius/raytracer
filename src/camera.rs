@@ -7,6 +7,7 @@ use crate::{
     ppm::PPMImage,
     ray::Ray,
     renderables::{RayData, Renderable},
+    transform::Transform,
     vec3::{Point3, Vec3, Vec3Ext},
 };
 
@@ -19,6 +20,7 @@ pub struct Camera {
     pub anti_aliasing_samples: usize,
     pub max_depth: usize,
     pub fov: usize,
+    pub transform: Transform,
     anti_aliasing_scale: f32,
 
     focal_length: f32,
@@ -67,6 +69,7 @@ impl Camera {
             anti_aliasing_samples: 1,
             anti_aliasing_scale: 1.,
             max_depth: 100,
+            transform: Transform::default(),
             fov: 90,
             aspect_ratio,
             output_width,

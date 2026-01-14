@@ -25,3 +25,4 @@ pub mod camera;
 pub mod renderables;
 pub mod interval;
 pub mod materials;
+pub mod transform;

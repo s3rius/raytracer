@@ -32,9 +32,11 @@ impl Material for CombineMaterial {
         let mut albedo = Vec3::ZERO;
 
         for material in &self.materials {
-            if let Some(mat_hit) = material.scatter(&ray, hit) {
+            if let Some(mat_hit) = material.scatter(ray_in, hit) {
                 albedo += mat_hit.attenuation;
                 ray = mat_hit.ray;
+                ray.origin = mat_hit.ray.origin;
+                ray.direction += mat_hit.ray.direction;
             }
         }
         Some(MaterialRecord::new(
